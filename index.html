@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <title>Herz & Geburtstagskarte</title>
@@ -28,12 +28,12 @@
 
     #clickButton {
       position: absolute;
-      top: 85%; /* Unterhalb des Herzens */
+      top: 60%;
       left: 50%;
       transform: translate(-50%, -50%);
       padding: 12px 24px;
       font-size: 18px;
-      background-color: #ff9999;;
+      background-color: #ff9999;
       color: black;
       border: none;
       border-radius: 10px;
@@ -76,27 +76,27 @@
       backface-visibility: hidden;
       position: relative;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      padding: 20px;
+      overflow-y: auto;
     }
 
     .left {
       background: #ff6666;
       color: white;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      text-align: center;
     }
 
     .right {
       background: #ffe6e6;
       color: black;
-      padding: 30px;
       transform-origin: left;
       transform: rotateY(180deg);
       transition: transform 1s ease;
       font-size: 18px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     .book.open .right {
@@ -118,23 +118,27 @@
 
 <canvas id="heartCanvas"></canvas>
 <canvas id="confettiCanvas"></canvas>
-<button id="clickButton">Devamini görmek icin bas</button>
+<button id="clickButton">Devamını görmek için bas</button>
 
 <audio id="bgMusic" src="a67f72fa-852e-4bdd-b301-9cabd481ecd4.mp3" loop preload="auto"></audio>
 
 <div id="cardPhase">
   <div class="book" id="book">
     <div class="page left">
-      <h1>🎉 Iyi ki dogdun 🎉</h1>
+      <h1>Iyi ki doğdun canımm ❤️🎉</h1>
     </div>
     <div class="edge"></div>
     <div class="page right">
-      <p>🎉 <strong>Dogum günün kutlu olsun</strong><br>
-        Nice musmutlu senelere insallah hep birlikte ☀️<br><br>
-        Seviyoree seni 🎊<br>
-        Öptüm byeeee ✨<br><br>
-        ...<br>
-        ... 💫<br><br>
+      <p>
+        <br>Musmutlu çok güzel senelerin olsun inşallah<br>
+
+        <br>Dilediğin tüm dileklerin gerçekleşsin yavrumm🍀<br>
+
+        <br>Yeni yaşın sana güzellikler getirsin,
+        bol şans ve mutluluk getirsin 💫<br><br>
+
+        Seviyoree seni 😘❤️<br>
+        Sana çok kalp ❤️❤️❤️<br>
       </p>
     </div>
   </div>
@@ -161,7 +165,7 @@
   resizeCanvas();
 
   const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2.5; // Herz leicht höher platzieren
+  const centerY = canvas.height / 2.5;
   const scale = 15;
   let t = 0;
 
@@ -192,11 +196,10 @@
       button.style.display = 'block';
       setTimeout(() => {
         button.classList.add('show');
-      }, 100); // Kurze Verzögerung für sanften Übergang
+      }, 100);
     }
   }
 
-  // Konfetti-Logik
   const confettiCount = 200;
   const confettiParticles = [];
 
@@ -229,7 +232,6 @@
     requestAnimationFrame(drawConfetti);
   }
 
-  // Musik & Herz starten
   window.addEventListener("DOMContentLoaded", () => {
     music.play().catch(() => {
       window.addEventListener("click", () => music.play(), { once: true });
@@ -237,7 +239,6 @@
     drawHeartLine();
   });
 
-  // Button-Klick: zeige Karte + starte Konfetti
   button.onclick = () => {
     canvas.style.display = 'none';
     button.style.display = 'none';
