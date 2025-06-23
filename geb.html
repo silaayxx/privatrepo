@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Herz & Geburtstagskarte</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: black;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    canvas, #confettiCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      z-index: 0;
+    }
+
+    #confettiCanvas {
+      z-index: 5;
+      pointer-events: none;
+      display: none;
+    }
+
+    #clickButton {
+      position: absolute;
+      top: 85%; /* Unterhalb des Herzens */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #ff9999;;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #clickButton.show {
+      opacity: 1;
+    }
+
+    #cardPhase {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      justify-content: center;
+      align-items: center;
+      perspective: 2000px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+    }
+
+    .book {
+      width: 600px;
+      height: 400px;
+      position: relative;
+      transform-style: preserve-3d;
+      display: flex;
+    }
+
+    .page {
+      width: 50%;
+      height: 100%;
+      backface-visibility: hidden;
+      position: relative;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    .left {
+      background: #ff6666;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .right {
+      background: #ffe6e6;
+      color: black;
+      padding: 30px;
+      transform-origin: left;
+      transform: rotateY(180deg);
+      transition: transform 1s ease;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .book.open .right {
+      transform: rotateY(0deg);
+    }
+
+    .edge {
+      width: 2px;
+      background: rgba(0,0,0,0.3);
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="heartCanvas"></canvas>
+<canvas id="confettiCanvas"></canvas>
+<button id="clickButton">Devamini görmek icin bas</button>
+
+<audio id="bgMusic" src="a67f72fa-852e-4bdd-b301-9cabd481ecd4.mp3" loop preload="auto"></audio>
+
+<div id="cardPhase">
+  <div class="book" id="book">
+    <div class="page left">
+      <h1>🎉 Iyi ki dogdun yavruummm 🎉</h1>
+    </div>
+    <div class="edge"></div>
+    <div class="page right">
+      <p>🎉 <strong>Dogum günün kutlu olsun</strong><br>
+        Nice musmutlu senelere insallah hep birlikte ☀️<br><br>
+        Seviyoree seni 🎊<br>
+        Öptüm byeeee ✨<br><br>
+        ...<br>
+        ... 💫<br><br>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('heartCanvas');
+  const ctx = canvas.getContext('2d');
+  const button = document.getElementById('clickButton');
+  const cardPhase = document.getElementById('cardPhase');
+  const book = document.getElementById('book');
+  const music = document.getElementById('bgMusic');
+  const confettiCanvas = document.getElementById('confettiCanvas');
+  const confettiCtx = confettiCanvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2.5; // Herz leicht höher platzieren
+  const scale = 15;
+  let t = 0;
+
+  function heartX(t) {
+    return 16 * Math.pow(Math.sin(t), 3);
+  }
+
+  function heartY(t) {
+    return 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+  }
+
+  function drawHeartLine() {
+    const rad = t * Math.PI / 180;
+    const x = heartX(rad) * scale;
+    const y = heartY(rad) * scale;
+
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(centerX + x, centerY - y);
+    ctx.stroke();
+
+    t += 3;
+    if (t <= 360) {
+      requestAnimationFrame(drawHeartLine);
+    } else {
+      button.style.display = 'block';
+      setTimeout(() => {
+        button.classList.add('show');
+      }, 100); // Kurze Verzögerung für sanften Übergang
+    }
+  }
+
+  // Konfetti-Logik
+  const confettiCount = 200;
+  const confettiParticles = [];
+
+  for (let i = 0; i < confettiCount; i++) {
+    confettiParticles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * -window.innerHeight,
+      size: Math.random() * 6 + 2,
+      color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+      speed: Math.random() * 3 + 2
+    });
+  }
+
+  function drawConfetti() {
+    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+    for (let c of confettiParticles) {
+      confettiCtx.fillStyle = c.color;
+      confettiCtx.beginPath();
+      confettiCtx.arc(c.x, c.y, c.size, 0, 2 * Math.PI);
+      confettiCtx.fill();
+
+      c.y += c.speed;
+      if (c.y > window.innerHeight) {
+        c.y = Math.random() * -100;
+        c.x = Math.random() * window.innerWidth;
+      }
+    }
+
+    requestAnimationFrame(drawConfetti);
+  }
+
+  // Musik & Herz starten
+  window.addEventListener("DOMContentLoaded", () => {
+    music.play().catch(() => {
+      window.addEventListener("click", () => music.play(), { once: true });
+    });
+    drawHeartLine();
+  });
+
+  // Button-Klick: zeige Karte + starte Konfetti
+  button.onclick = () => {
+    canvas.style.display = 'none';
+    button.style.display = 'none';
+    cardPhase.style.display = 'flex';
+    confettiCanvas.style.display = 'block';
+
+    setTimeout(() => {
+      book.classList.add('open');
+      drawConfetti();
+    }, 300);
+  };
+</script>
+
+</body>
+</html>
